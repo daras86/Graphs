@@ -65,7 +65,7 @@ class AdjacencyMatrixGraph(Graph):
         
         indegree = 0
         for i in range(self.numVertices):
-            if self.matrix[v][i] > 0:
+            if self.matrix[i][v] > 0:
                 indegree = indegree + 1
         
         return indegree

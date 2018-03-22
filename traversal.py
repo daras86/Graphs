@@ -23,7 +23,19 @@ def breadth_first(graph, start=0):
             if visited[v] != 1:
                 queue.put(v)
 
-g = AdjacencyMatrixGraph(9, directed=True)
+def depth_first(graph, visited, current=0):
+    if visited[current] == 1:
+        return
+    
+    visited[current] = 1
+
+    print("Visit: ", current)
+
+    for vertex in graph.get_adjacent_vertices(current):
+        depth_first(graph, visited, vertex)
+
+
+g = AdjacencyMatrixGraph(9, directed=False)
 g.add_edge(0, 1)
 g.add_edge(1, 2)
 g.add_edge(2, 7)
@@ -35,5 +47,9 @@ g.add_edge(6, 3)
 g.add_edge(3, 4)
 g.add_edge(6, 8)
 
-print("Breadth First Search")
-breadth_first(g, 0)
+#print("Breadth First Search")
+#breadth_first(g, 0)
+
+print("Depth First Search")
+visited = np.zeros(g.numVertices)
+depth_first(g, visited)
