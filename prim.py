@@ -2,7 +2,7 @@ import priority_dict
 
 from graph import *
 
-def build_distance_table(graph, source):
+def spanning_tree(graph, source):
     # A dictionary mapping from the vertex number to a tuple of
     # (distance from source, last vertex on path from source)
     distance_table = {}
@@ -16,18 +16,38 @@ def build_distance_table(graph, source):
     # Holds mapping of vertex id to distance from source
     # Access the highest priority (lowest distance) item first
     priority_queue = priority_dict.priority_dict()
-
     priority_queue[source] = 0
+
+    visited_vertices = set()
+
+    # Set of edges where each edge is represented as a string
+    # "1->2": is an edge netween vertices 1 and 2
+    spanning_tree = set()
 
     while len(priority_queue.keys()) > 0:
 
         current_vertex = priority_queue.pop_smallest()
 
-        # The distance of the current vertex from the source
-        current_distance = distance_table[current_vertex][0]
+        # Id we've visited a vertex earlier then we have all
+        # autbound edges from it, we do not process it again
+        if current_vertex in visited_vertices:
+            continue
+        
+        visited_vertices.add(current_vertex)
+
+        # If the current vertex is the source, we haven't traversed an edge yet
+        # no edge to add to our spanning tree
+        if current_vertex != source:
+            # The current vertex is connected by the lowest weighted edge
+            last_vertex =  distance_table[current_vertex][1]
+
+            edge = str(last_vertex) + "-->" + str(current_vertex)
+
+            if edge not in spanning_tree:
+                spanning_tree.add(edge)
 
         for neighbor in graph.get_adjacent_vertices(current_vertex):
-            distance = current_distance + graph.get_edge_weight(current_vertex, neighbor)
+            distance = graph.get_edge_weight(current_vertex, neighbor)
             
             # The last recorded distance of this neighbor from the source
             neighbor_distance = distance_table[neighbor][0]
@@ -38,42 +58,22 @@ def build_distance_table(graph, source):
             if neighbor_distance is None or neighbor_distance > distance:
 
                 distance_table[neighbor] = (distance, current_vertex)
-
                 priority_queue[neighbor] = distance
 
-    return distance_table
-
-def shortest_path(graph, source, destination):
-    distance_table = build_distance_table(graph, source)
-
-    path = [destination]
-
-    previous_vertex = distance_table[destination][1]
-
-    while previous_vertex is not None and previous_vertex is not source:
-
-        path = [previous_vertex] + path
-        previous_vertex = distance_table[previous_vertex][1]
-    
-    if previous_vertex is None:
-        print("There is no path from %d to %d" % (source, destination))
-    else:
-        path = [source] + path
-        print("Shortest path is: ", path)
+    for edge in spanning_tree:
+        print(edge)
 
 g = AdjacencyMatrixGraph(8, directed=False)
 
 g.add_edge(0,1,1)
 g.add_edge(1,2,2)
-g.add_edge(1,3,6)
+g.add_edge(1,3,2)
 g.add_edge(2,3,2)
 g.add_edge(1,4,3)
 g.add_edge(3,5,1)
-g.add_edge(5,4,5)
+g.add_edge(5,4,3)
 g.add_edge(3,6,1)
 g.add_edge(6,7,1)
-g.add_edge(0,7,8)
+g.add_edge(7,0,1)
 
-shortest_path(g, 0, 6)
-shortest_path(g, 4, 7)
-shortest_path(g, 7, 0)
+spanning_tree(g, 3)
