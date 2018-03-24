@@ -19,7 +19,7 @@ def build_distance_table(graph, source):
 
     priority_queue[source] = 0
 
-    while not len(priority_queue.keys()) > 0:
+    while len(priority_queue.keys()) > 0:
 
         current_vertex = priority_queue.pop_smallest()
 
